@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle de Orden de Trabajo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f8f9fa; }
+        .navbar { background-color: #2c3e50; padding: 12px 20px; display: flex; gap: 15px; }
+        .navbar a { color: #ffffff; text-decoration: none; font-weight: bold; padding: 8px 12px; border-radius: 4px; }
+        .navbar a:hover { background-color: #34495e; }
+        .container { padding: 20px 40px; max-width: 1000px; margin: 0 auto; }
+        .form-container, .info-card { background-color: #ffffff; border: 1px solid #ddd; padding: 20px; border-radius: 6px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+        
+      
+        .form-group select, .form-group input { 
+            width: 100%; 
+            padding: 10px 12px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            background-color: #fff;
+            font-size: 14px;
+            text-overflow: ellipsis;
+        }
+
+        .form-group select option {
+            padding: 8px;
+        }
+
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; color: white; cursor: pointer; text-decoration: none; display: inline-block; font-size: 14px; }
+        .btn-success { background-color: #28a745; }
+        .btn-secondary { background-color: #6c757d; }
+        table { width: 100%; border-collapse: collapse; background-color: #ffffff; border: 1px solid #ddd; margin-bottom: 30px; }
+        th { background-color: #007bff; color: #ffffff; font-weight: bold; padding: 10px 12px; text-align: left; }
+        td { padding: 10px 12px; border-bottom: 1px solid #ddd; }
+        .badge { padding: 4px 8px; border-radius: 4px; color: #fff; font-weight: bold; font-size: 12px; }
+        .badge-pendiente { background-color: #ffc107; color: #000; }
+        .badge-proceso { background-color: #17a2b8; }
+        .badge-finalizada { background-color: #28a745; }
+        .badge-cancelada { background-color: #dc3545; }
+        
+        
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <a th:href="@{/clientes}">Clientes</a>
+        <a th:href="@{/mecanicos}">Mecánicos</a>
+        <a th:href="@{/vehiculos}">Vehículos</a>
+        <a th:href="@{/servicios}">Servicios</a>
+        <a th:href="@{/repuestos}">Repuestos</a>
+        <a th:href="@{/ordenes}">Órdenes de Trabajo</a>
+    </div>
+
+    <div class="container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>Detalle de la Orden #<span th:text="${orden.idOrden}"></span></h2>
+            <a th:href="@{/ordenes}" class="btn btn-secondary">Volver a Órdenes</a>
+        </div>
+
+
+        <div class="info-card">
+            <h3>Información General</h3>
+            <div class="info-grid">
+                <div><strong>Vehículo (ID):</strong> <span th:text="${orden.idVehiculo}"></span></div>
+                <div><strong>Mecánico (ID):</strong> <span th:text="${orden.idMecanico}"></span></div>
+                <div>
+                    <strong>Estado:</strong> 
+                    <span th:text="${orden.estado}" 
+                          th:class="'badge ' + (${orden.estado == 'PENDIENTE'} ? 'badge-pendiente' : (${orden.estado == 'EN PROCESO'} ? 'badge-proceso' : (${orden.estado == 'FINALIZADA'} ? 'badge-finalizada' : 'badge-cancelada')))">
+                    </span>
+                </div>
+                <div><strong>Costo Total:</strong> Q <span th:text="${#numbers.formatDecimal(orden.costoTotal, 1, 2)}"></span></div>
+            </div>
+            <p><strong>Descripción:</strong> <span th:text="${orden.descripcionProblema}"></span></p>
+        </div>
+
+
+        <div class="form-container">
+            <h3>Asignar Repuesto</h3>
+            <form th:action="@{/ordenes/agregar-repuesto}" method="post">
+                <input type="hidden" name="idOrden" th:value="${orden.idOrden}" />
+                <div class="form-group">
+                    <label>Repuesto:</label>
+                    <select name="idRepuesto" required>
+                        <option value="">-- Seleccionar Repuesto --</option>
+                        <option th:each="r : ${repuestosDisponibles}" 
+                                th:value="${r.idRepuesto}" 
+                                th:text="${r.nombre + ' (Existencia: ' + r.existencia + ') - Q' + r.precio}">
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Cantidad:</label>
+                    <input type="number" name="cantidad" value="1" min="1" required />
+                </div>
+                <button type="submit" class="btn btn-success">Agregar Repuesto</button>
+            </form>
+        </div>
+
+        <h3>Repuestos Utilizados</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Detalle</th>
+                    <th>ID Repuesto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(repuestosAsignados)}">
+                    <td colspan="5" style="text-align: center; color: #777;">No hay repuestos asignados.</td>
+                </tr>
+                <tr th:each="d : ${repuestosAsignados}">
+                    <td th:text="${d.idDetalleRepuesto}"></td>
+                    <td th:text="${d.idRepuesto}"></td>
+                    <td th:text="${d.cantidad}"></td>
+                    <td th:text="'Q ' + ${#numbers.formatDecimal(d.precioUnitario, 1, 2)}"></td>
+                    <td th:text="'Q ' + ${#numbers.formatDecimal(d.subtotal, 1, 2)}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+
+        <div class="form-container">
+            <h3>Asignar Servicio</h3>
+            <form th:action="@{/ordenes/agregar-servicio}" method="post">
+                <input type="hidden" name="idOrden" th:value="${orden.idOrden}" />
+                <div class="form-group">
+                    <label>Servicio:</label>
+                    <select name="idServicio" required>
+                        <option value="">-- Seleccionar Servicio --</option>
+                        <option th:each="s : ${serviciosDisponibles}" 
+                                th:value="${s.idServicio}" 
+                                th:text="${s.nombreServicio + ' - Q' + s.costoManoObra}">
+                        </option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Agregar Servicio</button>
+            </form>
+        </div>
+
+        <h3>Servicios Aplicados</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID Detalle</th>
+                    <th>ID Servicio</th>
+                    <th>Costo Aplicado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${#lists.isEmpty(serviciosAsignados)}">
+                    <td colspan="3" style="text-align: center; color: #777;">No hay servicios asignados.</td>
+                </tr>
+                <tr th:each="s : ${serviciosAsignados}">
+                    <td th:text="${s.idDetalleServicio}"></td>
+                    <td th:text="${s.idServicio}"></td>
+                    <td th:text="'Q ' + ${#numbers.formatDecimal(s.costoAplicado, 1, 2)}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+
+</body>
+</html>

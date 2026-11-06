@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Taller El Último Arranque - Gestión de Vehículos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .navbar {
+            background-color: #1e293b;
+            padding: 10px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .navbar-brand {
+            color: #38bdf8;
+            font-weight: bold;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .navbar-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .navbar-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar-links a:hover {
+            background-color: #334155;
+            color: #ffffff;
+        }
+
+        .container {
+            padding: 15px 25px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .header-section h2 {
+            margin: 0;
+            color: #1e293b;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+       
+        .top-panel {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 15px;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 12px 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            border-left: 4px solid #0284c7;
+        }
+
+        .stat-card h4 {
+            margin: 0 0 5px 0;
+            color: #64748b;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .number {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        .form-container {
+            background-color: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 12px 18px;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .form-container h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #1e293b;
+            font-size: 14px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 2px;
+            font-size: 11px;
+            color: #475569;
+        }
+
+        .form-group input, 
+        .form-group select {
+            width: 100%;
+            padding: 5px 7px;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 11px;
+            font-family: inherit;
+        }
+
+
+        .btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .btn-success { background-color: #16a34a; }
+        .btn-success:hover { background-color: #15803d; }
+
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+
+        .btn-warning { background-color: #ca8a04; color: white; }
+        .btn-warning:hover { background-color: #a16207; }
+
+        .btn-secondary { background-color: #64748b; }
+        .btn-secondary:hover { background-color: #475569; }
+
+        .btn-primary { background-color: #0284c7; }
+        .btn-primary:hover { background-color: #0369a1; }
+
+        .form-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+      
+        .acciones-lineales {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        
+        .table-section {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 12px;
+        }
+
+        th {
+            background-color: #1e293b;
+            color: #ffffff;
+            font-weight: 600;
+            padding: 8px 10px;
+        }
+
+        td {
+            padding: 7px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+        
+         .navbar-brand a {
+    color: #27F55B;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+        
+        
+    </style>
+</head>
+<body>
+
+
+    <div class="navbar">
+        <div class="navbar-brand">
+            <a th:href="@{/}">🛠️ Taller El Último Arranque</a>
+        </div>
+        <div class="navbar-links">
+            <a th:href="@{/clientes}">Clientes</a>
+            <a th:href="@{/mecanicos}">Mecánicos</a>
+            <a th:href="@{/vehiculos}">Vehículos</a>
+            <a th:href="@{/servicios}">Servicios</a>
+            <a th:href="@{/repuestos}">Repuestos</a>
+            <a th:href="@{/ordenes}">Órdenes</a>
+        </div>
+    </div>
+
+    <div class="container">
+        
+        <div class="header-section">
+
+            <h2 th:text="${vehiculo.idVehiculo == null || vehiculo.idVehiculo == 0} ? 'Gestión de Vehículos - Registrar' : 'Gestión de Vehículos - Editar'">Gestión de Vehículos</h2>
+        </div>
+
+
+        <div class="top-panel">
+            <div class="stat-card">
+                <h4>Total de Vehículos</h4>
+                <div class="number" th:text="${#lists.size(vehiculos)}">0</div>
+            </div>
+
+            <div class="form-container">
+                <h3 th:text="${vehiculo.idVehiculo == null || vehiculo.idVehiculo == 0} ? 'Registrar Nuevo Vehículo' : 'Editar Vehículo'"></h3>
+                <form th:action="@{/vehiculos/guardar}" th:object="${vehiculo}" method="post">
+                    <input type="hidden" th:field="*{idVehiculo}">
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Placa:</label>
+                            <input type="text" th:field="*{placa}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Marca:</label>
+                            <input type="text" th:field="*{marca}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Modelo:</label>
+                            <input type="text" th:field="*{modelo}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Año:</label>
+                          
+                            <input type="number" th:field="*{anio}" required min="1900" max="2100" placeholder="Ej. 2020">
+                        </div>
+
+                        <div class="form-group full-width">
+                            <label>ID Cliente:</label>
+                            <input type="number" th:field="*{idCliente}" required>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-success">Guardar Vehículo</button>
+                        <a th:href="@{/vehiculos}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        
+        <div style="margin-bottom: 8px;">
+            <button type="button" class="btn btn-primary" onclick="toggleLista()">🔍 Mostrar / Ocultar Lista de Vehículos</button>
+        </div>
+
+
+        <div id="seccionLista" class="table-section">
+            <div class="table-card">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Placa</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Año</th>
+                            <th>ID Cliente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="v : ${vehiculos}">
+                            <td th:text="${v.idVehiculo}"></td>
+                            <td th:text="${v.placa}"></td>
+                            <td th:text="${v.marca}"></td>
+                            <td th:text="${v.modelo}"></td>
+                            <td th:text="${v.anio}"></td>
+                            <td th:text="${v.idCliente}"></td>
+                            <td>
+                                <div class="acciones-lineales">
+                                    <a th:href="@{'/vehiculos/editar/' + ${v.idVehiculo}}" class="btn btn-warning" title="Editar">✏️ Editar</a>
+                                    <a th:href="@{'/vehiculos/eliminar/' + ${v.idVehiculo}}" class="btn btn-danger" onclick="return confirm('¿Estás seguro de eliminar este vehículo?')" title="Eliminar">🗑️ Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        function toggleLista() {
+            var seccion = document.getElementById("seccionLista");
+            if (seccion.style.display === "none" || seccion.style.display === "") {
+                seccion.style.display = "block";
+            } else {
+                seccion.style.display = "none";
+            }
+        }
+    </script>
+
+</body>
+</html>
